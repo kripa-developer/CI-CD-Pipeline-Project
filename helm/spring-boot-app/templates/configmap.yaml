@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "spring-boot-app.name" . }}-config
+  namespace: {{ .Values.namespace }}
+data:
+  APP_VERSION: {{ .Values.app.version | quote }}
+  JAVA_OPTS: {{ .Values.app.javaOpts | quote }}

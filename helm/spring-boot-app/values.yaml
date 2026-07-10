@@ -1,0 +1,55 @@
+replicaCount: 4
+
+image:
+  repository: yourdockerhubuser/demo-app
+  tag: latest
+  pullPolicy: Always
+
+app:
+  version: "1.0.0"
+  javaOpts: "-Xms256m -Xmx512m"
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+# Rolling update strategy
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 0
+
+probes:
+  readiness:
+    path: /actuator/health/readiness
+    initialDelaySeconds: 15
+    periodSeconds: 5
+  liveness:
+    path: /actuator/health/liveness
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  startup:
+    path: /actuator/health
+    failureThreshold: 30
+    periodSeconds: 2
+
+autoscaling:
+  enabled: true
+  minReplicas: 4
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+ingress:
+  enabled: false
+  className: nginx
+  host: demo-app.example.com
+
+namespace: demo
